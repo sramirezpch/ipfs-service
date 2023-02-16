@@ -1,0 +1,14 @@
+FROM golang:1.20
+
+ENV PINATA_API_KEY='31f084ecf2ec78dc1b8a'
+ENV PINATA_SECRET_KEY='764895582c9c191cb897e15da6a374372057bd7efed5c6d794ce2c405ad43be1'
+
+WORKDIR /app
+
+ADD . /app/
+
+EXPOSE 8080
+
+RUN go mod tidy
+
+CMD go run main.go
