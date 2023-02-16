@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	w "github.com/sramirezpch/ipfs-writer/writer"
+	w "github.com/sramirezpch/ipfs-writer/src/writer"
 )
 
 func NewRouter() *mux.Router {
