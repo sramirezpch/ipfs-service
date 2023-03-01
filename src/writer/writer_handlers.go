@@ -18,5 +18,14 @@ func (h *IPFSWriterHandler) HandlePinFile(w http.ResponseWriter, r *http.Request
 		fmt.Println(err.Error())
 		return
 	}
-	h.Writer.PinJSON(m)
+
+	hash, pinErr := h.Writer.PinJSON(m)
+	if pinErr != nil {
+		fmt.Println(pinErr)
+		http.Error(w, "An error ocurred, please check the logs", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Metadata pinned successfully!", "ipfs_hash": hash})
 }
