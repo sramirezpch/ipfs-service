@@ -2,11 +2,11 @@ package writer
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	p "github.com/wabarc/ipfs-pinner/pkg/pinata"
 )
@@ -19,21 +19,37 @@ func NewIPFSWriter() *IPFSWriter {
 	return &IPFSWriter{pinata: &p.Pinata{Apikey: os.Getenv("PINATA_API_KEY"), Secret: os.Getenv("PINATA_SECRET_KEY")}}
 }
 
-func (w *IPFSWriter) PinJSON(data Metadata) (string, error) {
+func (w *IPFSWriter) PinJSON(data Metadata) ([]byte, error) {
+	url := "https://api.pinata.cloud/pinning/pinJSONToIPFS"
 
-	json, err := json.Marshal(data)
-	if err != nil {
-		fmt.Println(err.Error())
-		return "nil", errors.New("couldn't serialize the data")
+	json, jsonErr := json.Marshal(data)
+	if jsonErr != nil {
+		return nil, jsonErr
 	}
 
-	hash, pinErr := w.pinata.PinWithBytes(json)
-	if pinErr != nil {
-		fmt.Println(pinErr.Error())
-		return "", errors.New("failed to pin the data")
+	req, reqErr := http.NewRequest("POST", url, strings.NewReader(string(json)))
+	if reqErr != nil {
+		return nil, reqErr
 	}
 
-	return hash, nil
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("PINATA_JWT")))
+	req.Header.Add("Content-Type", "application/json")
+
+	client := http.Client{}
+
+	resp, respErr := client.Do(req)
+	if respErr != nil {
+		return nil, respErr
+	}
+
+	defer resp.Body.Close()
+
+	body, readErr := ioutil.ReadAll(resp.Body)
+	if readErr != nil {
+		return nil, readErr
+	}
+
+	return body, nil
 }
 
 func (w *IPFSWriter) UnpinJSON(cid string) (string, error) {
@@ -48,10 +64,10 @@ func (w *IPFSWriter) UnpinJSON(cid string) (string, error) {
 	}
 
 	client := http.Client{}
-	resp, reqError := client.Do(req)
-	if reqError != nil {
+	resp, respErr := client.Do(req)
+	if respErr != nil {
 		fmt.Println(err.Error())
-		return "", reqError
+		return "", respErr
 	}
 	defer resp.Body.Close()
 
@@ -63,4 +79,33 @@ func (w *IPFSWriter) UnpinJSON(cid string) (string, error) {
 	}
 
 	return string(body), nil
+}
+
+func (w *IPFSWriter) ListPinnedFiles() ([]byte, error) {
+	url := "https://api.pinata.cloud/data/pinList?status=pinned"
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("PINATA_JWT")))
+
+	client := http.Client{}
+
+	resp, reqErr := client.Do(req)
+	if reqErr != nil {
+		fmt.Println(reqErr.Error())
+		return nil, reqErr
+	}
+	defer resp.Body.Close()
+
+	body, readErr := ioutil.ReadAll(resp.Body)
+	if readErr != nil {
+		fmt.Println(readErr.Error())
+		return nil, readErr
+	}
+
+	return body, nil
 }
