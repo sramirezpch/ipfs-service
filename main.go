@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -17,16 +18,19 @@ func NewRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/pin", ipfsWriterHandler.HandlePinFile).Methods("POST")
 	r.HandleFunc("/unpin/{cid}", ipfsWriterHandler.HandleUnpinFile).Methods("DELETE")
-
+	r.HandleFunc("/pin", ipfsWriterHandler.HandleListPinnedFiles).Methods("GET")
 	return r
 }
 
 func main() {
 	router := NewRouter()
-	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"},
-		AllowedHeaders: []string{"*"},
-	})
+	c := cors.AllowAll()
 
-	log.Fatal(http.ListenAndServe(":8080", c.Handler(router)))
+	err := http.ListenAndServe(":8080", c.Handler(router))
+	if err != nil {
+		log.Fatalf("Couldn't start the server: %s\n", err.Error())
+		os.Exit(0)
+	}
+
+	log.Println("Server started in port 8080")
 }
