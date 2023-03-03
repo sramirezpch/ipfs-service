@@ -1,4 +1,4 @@
-package writer
+package service
 
 import (
 	"encoding/json"
@@ -7,14 +7,16 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	controller "github.com/sramirezpch/ipfs-writer/src/writer/controller"
+	dao "github.com/sramirezpch/ipfs-writer/src/writer/dao"
 )
 
 type IPFSWriterHandler struct {
-	Writer *IPFSWriter
+	Writer *controller.IPFSWriter
 }
 
 func (h *IPFSWriterHandler) HandlePinFile(w http.ResponseWriter, r *http.Request) {
-	var m Metadata
+	var m dao.Metadata
 
 	err := json.NewDecoder(r.Body).Decode(&m)
 	if err != nil {
@@ -29,7 +31,7 @@ func (h *IPFSWriterHandler) HandlePinFile(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var pinnedFile PinnedFile
+	var pinnedFile dao.PinnedFile
 	unmarshalErr := json.Unmarshal(hash, &pinnedFile)
 	if unmarshalErr != nil {
 		http.Error(w, fmt.Sprintf("Something happened\n%s", unmarshalErr.Error()), http.StatusInternalServerError)
