@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 
 	p "github.com/wabarc/ipfs-pinner/pkg/pinata"
@@ -25,7 +27,6 @@ func (w *IPFSWriter) PinJSON(data Metadata) (string, error) {
 		return "nil", errors.New("couldn't serialize the data")
 	}
 
-	fmt.Println(json)
 	hash, pinErr := w.pinata.PinWithBytes(json)
 	if pinErr != nil {
 		fmt.Println(pinErr.Error())
@@ -33,4 +34,33 @@ func (w *IPFSWriter) PinJSON(data Metadata) (string, error) {
 	}
 
 	return hash, nil
+}
+
+func (w *IPFSWriter) UnpinJSON(cid string) (string, error) {
+	url := "https://api.pinata.cloud/pinning/unpin/"
+
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s%s", url, cid), nil)
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("PINATA_JWT")))
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return "", err
+	}
+
+	client := http.Client{}
+	resp, reqError := client.Do(req)
+	if reqError != nil {
+		fmt.Println(err.Error())
+		return "", reqError
+	}
+	defer resp.Body.Close()
+
+	body, readErr := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		fmt.Println(err)
+		return "", readErr
+	}
+
+	return string(body), nil
 }
