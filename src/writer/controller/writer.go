@@ -1,4 +1,4 @@
-package writer
+package controller
 
 import (
 	"encoding/json"
@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	models "github.com/sramirezpch/ipfs-writer/src/writer/dao"
 	p "github.com/wabarc/ipfs-pinner/pkg/pinata"
 )
 
@@ -19,7 +20,7 @@ func NewIPFSWriter() *IPFSWriter {
 	return &IPFSWriter{pinata: &p.Pinata{Apikey: os.Getenv("PINATA_API_KEY"), Secret: os.Getenv("PINATA_SECRET_KEY")}}
 }
 
-func (w *IPFSWriter) PinJSON(data Metadata) ([]byte, error) {
+func (w *IPFSWriter) PinJSON(data models.Metadata) ([]byte, error) {
 	url := "https://api.pinata.cloud/pinning/pinJSONToIPFS"
 
 	json, jsonErr := json.Marshal(data)
