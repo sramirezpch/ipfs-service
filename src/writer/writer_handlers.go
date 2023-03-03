@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type IPFSWriterHandler struct {
@@ -28,4 +30,19 @@ func (h *IPFSWriterHandler) HandlePinFile(w http.ResponseWriter, r *http.Request
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Metadata pinned successfully!", "ipfs_hash": hash})
+}
+
+func (h *IPFSWriterHandler) HandleUnpinFile(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	cid := params["cid"]
+
+	res, err := h.Writer.UnpinJSON(cid)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	fmt.Println(res)
+	w.WriteHeader(http.StatusOK)
 }

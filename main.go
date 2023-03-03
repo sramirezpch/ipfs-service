@@ -15,7 +15,8 @@ func NewRouter() *mux.Router {
 	ipfsWriterHandler := &w.IPFSWriterHandler{Writer: ipfsWriter}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/pin-file", ipfsWriterHandler.HandlePinFile).Methods("POST")
+	r.HandleFunc("/pin", ipfsWriterHandler.HandlePinFile).Methods("POST")
+	r.HandleFunc("/unpin/{cid}", ipfsWriterHandler.HandleUnpinFile).Methods("DELETE")
 
 	return r
 }
