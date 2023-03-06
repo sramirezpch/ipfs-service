@@ -16,6 +16,13 @@ func NewRouter() *mux.Router {
 	ipfsWriterHandler := &controller.IPFSWriterHandler{Writer: pinataIPFS}
 
 	r := mux.NewRouter()
+	applyJSONToResponseHeader := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Add("Content-Type", "application/json")
+			next.ServeHTTP(w, r)
+		})
+	}
+	r.Use(applyJSONToResponseHeader)
 	r.HandleFunc("/pin", ipfsWriterHandler.HandlePinFile).Methods("POST")
 	r.HandleFunc("/unpin/{cid}", ipfsWriterHandler.HandleUnpinFile).Methods("DELETE")
 	r.HandleFunc("/pin", ipfsWriterHandler.HandleListPinnedFiles).Methods("GET")
