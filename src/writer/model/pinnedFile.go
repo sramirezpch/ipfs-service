@@ -4,7 +4,7 @@ import "time"
 
 type PinnedFile struct {
 	IpfsHash     string
-	PinSize      int8
+	PinSize      int64
 	Timestamp    time.Time
 	IsDuplicated *bool
 }
