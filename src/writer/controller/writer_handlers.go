@@ -1,4 +1,4 @@
-package service
+package controller
 
 import (
 	"encoding/json"
@@ -7,12 +7,12 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	controller "github.com/sramirezpch/ipfs-writer/src/writer/controller"
 	model "github.com/sramirezpch/ipfs-writer/src/writer/model"
+	"github.com/sramirezpch/ipfs-writer/src/writer/service"
 )
 
 type IPFSWriterHandler struct {
-	Writer *controller.IPFSWriter
+	Writer service.Handler
 }
 
 func (h *IPFSWriterHandler) HandlePinFile(w http.ResponseWriter, r *http.Request) {

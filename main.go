@@ -8,13 +8,12 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	controller "github.com/sramirezpch/ipfs-writer/src/writer/controller"
-	service "github.com/sramirezpch/ipfs-writer/src/writer/service"
+	pinata "github.com/sramirezpch/ipfs-writer/src/writer/service/pinata"
 )
 
 func NewRouter() *mux.Router {
-	ipfsWriter := controller.NewIPFSWriter()
-
-	ipfsWriterHandler := &service.IPFSWriterHandler{Writer: ipfsWriter}
+	pinataIPFS := pinata.NewIPFSWriter()
+	ipfsWriterHandler := &controller.IPFSWriterHandler{Writer: pinataIPFS}
 
 	r := mux.NewRouter()
 	r.HandleFunc("/pin", ipfsWriterHandler.HandlePinFile).Methods("POST")
