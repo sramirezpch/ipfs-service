@@ -5,7 +5,7 @@ import (
 )
 
 type Handler interface {
-	PinJSON(data model.Metadata) ([]byte, error)
+	PinJSON(data model.FormData) ([]byte, error)
 	UnpinJSON(cid string) (string, error)
 	ListPinnedFiles() ([]byte, error)
 	Hello()

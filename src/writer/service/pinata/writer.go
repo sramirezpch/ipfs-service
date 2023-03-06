@@ -18,7 +18,7 @@ func NewIPFSWriter() *IPFSWriter {
 	return &IPFSWriter{}
 }
 
-func (w *IPFSWriter) PinJSON(data model.Metadata) ([]byte, error) {
+func (w *IPFSWriter) PinJSON(data model.FormData) ([]byte, error) {
 	url := "https://api.pinata.cloud/pinning/pinJSONToIPFS"
 
 	json, jsonErr := json.Marshal(data)

@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -16,22 +17,39 @@ type IPFSWriterHandler struct {
 }
 
 func (h *IPFSWriterHandler) HandlePinFile(w http.ResponseWriter, r *http.Request) {
-	var m model.Metadata
-
-	err := json.NewDecoder(r.Body).Decode(&m)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to decode the body\n%s", err.Error()), http.StatusBadRequest)
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+
 	}
 
-	hash, pinErr := h.Writer.PinJSON(m)
+	log.Printf("Content-Length: %s", r.Header.Get("Content-Length"))
 
-	if pinErr != nil {
-		http.Error(w, fmt.Sprintf("Failed to pin the file to Pinata\n%s", pinErr.Error()), http.StatusBadRequest)
+	file, _, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	title := r.FormValue("title")
+	description := r.FormValue("description")
+
+	fileData, err := ioutil.ReadAll(file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	var pinnedFile model.PinnedFile
+	formData := model.FormData{
+		Title:       title,
+		Description: description,
+		File:        fileData,
+	}
+
+	hash, err := h.Writer.PinJSON(formData)
+
 	unmarshalErr := json.Unmarshal(hash, &pinnedFile)
 	if unmarshalErr != nil {
 		http.Error(w, fmt.Sprintf("Something happened\n%s", unmarshalErr.Error()), http.StatusInternalServerError)
