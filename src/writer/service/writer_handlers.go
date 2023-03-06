@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	controller "github.com/sramirezpch/ipfs-writer/src/writer/controller"
-	dao "github.com/sramirezpch/ipfs-writer/src/writer/dao"
+	model "github.com/sramirezpch/ipfs-writer/src/writer/model"
 )
 
 type IPFSWriterHandler struct {
@@ -16,7 +16,7 @@ type IPFSWriterHandler struct {
 }
 
 func (h *IPFSWriterHandler) HandlePinFile(w http.ResponseWriter, r *http.Request) {
-	var m dao.Metadata
+	var m model.Metadata
 
 	err := json.NewDecoder(r.Body).Decode(&m)
 	if err != nil {
@@ -31,7 +31,7 @@ func (h *IPFSWriterHandler) HandlePinFile(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var pinnedFile dao.PinnedFile
+	var pinnedFile model.PinnedFile
 	unmarshalErr := json.Unmarshal(hash, &pinnedFile)
 	if unmarshalErr != nil {
 		http.Error(w, fmt.Sprintf("Something happened\n%s", unmarshalErr.Error()), http.StatusInternalServerError)
