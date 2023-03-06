@@ -1,4 +1,4 @@
-package controller
+package pinata
 
 import (
 	"encoding/json"
@@ -9,15 +9,13 @@ import (
 	"strings"
 
 	model "github.com/sramirezpch/ipfs-writer/src/writer/model"
-	p "github.com/wabarc/ipfs-pinner/pkg/pinata"
 )
 
 type IPFSWriter struct {
-	pinata *p.Pinata
 }
 
 func NewIPFSWriter() *IPFSWriter {
-	return &IPFSWriter{pinata: &p.Pinata{Apikey: os.Getenv("PINATA_API_KEY"), Secret: os.Getenv("PINATA_SECRET_KEY")}}
+	return &IPFSWriter{}
 }
 
 func (w *IPFSWriter) PinJSON(data model.Metadata) ([]byte, error) {
@@ -109,4 +107,8 @@ func (w *IPFSWriter) ListPinnedFiles() ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func (w *IPFSWriter) Hello() {
+	fmt.Println("Hello!")
 }
