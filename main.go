@@ -7,12 +7,16 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	config "github.com/sramirezpch/ipfs-writer/config"
 	controller "github.com/sramirezpch/ipfs-writer/src/writer/controller"
 	pinata "github.com/sramirezpch/ipfs-writer/src/writer/service/pinata"
 )
 
 func NewRouter() *mux.Router {
-	pinataIPFS := pinata.NewIPFSWriter()
+	config := config.NewConfig()
+
+	pinataIPFS := pinata.NewIPFSWriter(config)
+
 	ipfsWriterHandler := &controller.IPFSWriterHandler{Writer: pinataIPFS}
 
 	r := mux.NewRouter()

@@ -5,17 +5,18 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 
+	config "github.com/sramirezpch/ipfs-writer/config"
 	model "github.com/sramirezpch/ipfs-writer/src/writer/model"
 )
 
 type IPFSWriter struct {
+	Config *config.Config
 }
 
-func NewIPFSWriter() *IPFSWriter {
-	return &IPFSWriter{}
+func NewIPFSWriter(c *config.Config) *IPFSWriter {
+	return &IPFSWriter{Config: c}
 }
 
 func (w *IPFSWriter) PinJSON(data model.FormData) ([]byte, error) {
@@ -31,7 +32,7 @@ func (w *IPFSWriter) PinJSON(data model.FormData) ([]byte, error) {
 		return nil, reqErr
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("PINATA_JWT")))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", w.Config.PinataJWT))
 	req.Header.Add("Content-Type", "application/json")
 
 	client := http.Client{}
@@ -55,7 +56,7 @@ func (w *IPFSWriter) UnpinJSON(cid string) (string, error) {
 	url := "https://api.pinata.cloud/pinning/unpin/"
 
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s%s", url, cid), nil)
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("PINATA_JWT")))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", w.Config.PinataJWT))
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -89,7 +90,7 @@ func (w *IPFSWriter) ListPinnedFiles() ([]byte, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("PINATA_JWT")))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", w.Config.PinataJWT))
 
 	client := http.Client{}
 
