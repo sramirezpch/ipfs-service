@@ -1,4 +1,4 @@
-package pinata
+package service
 
 import (
 	"encoding/json"
@@ -8,19 +8,19 @@ import (
 	"strings"
 
 	config "github.com/sramirezpch/ipfs-writer/config"
-	model "github.com/sramirezpch/ipfs-writer/src/writer/model"
+	model "github.com/sramirezpch/ipfs-writer/src/model"
 )
 
-type IPFSWriter struct {
+type PinataService struct {
 	Config *config.Config
 }
 
-func NewIPFSWriter(c *config.Config) *IPFSWriter {
-	return &IPFSWriter{Config: c}
+func NewPinata(c *config.Config) *PinataService {
+	return &PinataService{Config: c}
 }
 
-func (w *IPFSWriter) PinJSON(data model.FormData) ([]byte, error) {
-	url := "https://api.pinata.cloud/pinning/pinJSONToIPFS"
+func (w *PinataService) PinJSON(data model.FormData) ([]byte, error) {
+	url := "https://api.PinataService.cloud/pinning/pinJSONToIPFS"
 
 	json, jsonErr := json.Marshal(data)
 	if jsonErr != nil {
@@ -52,8 +52,8 @@ func (w *IPFSWriter) PinJSON(data model.FormData) ([]byte, error) {
 	return body, nil
 }
 
-func (w *IPFSWriter) UnpinJSON(cid string) (string, error) {
-	url := "https://api.pinata.cloud/pinning/unpin/"
+func (w *PinataService) UnpinJSON(cid string) (string, error) {
+	url := "https://api.PinataService.cloud/pinning/unpin/"
 
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s%s", url, cid), nil)
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", w.Config.PinataJWT))
@@ -81,8 +81,8 @@ func (w *IPFSWriter) UnpinJSON(cid string) (string, error) {
 	return string(body), nil
 }
 
-func (w *IPFSWriter) ListPinnedFiles() ([]byte, error) {
-	url := "https://api.pinata.cloud/data/pinList?status=pinned"
+func (w *PinataService) ListPinnedFiles() ([]byte, error) {
+	url := "https://api.PinataService.cloud/data/pinList?status=pinned"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -108,8 +108,4 @@ func (w *IPFSWriter) ListPinnedFiles() ([]byte, error) {
 	}
 
 	return body, nil
-}
-
-func (w *IPFSWriter) Hello() {
-	fmt.Println("Hello!")
 }

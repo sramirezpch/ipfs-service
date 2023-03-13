@@ -8,16 +8,18 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	config "github.com/sramirezpch/ipfs-writer/config"
-	controller "github.com/sramirezpch/ipfs-writer/src/writer/controller"
-	pinata "github.com/sramirezpch/ipfs-writer/src/writer/service/pinata"
+	controller "github.com/sramirezpch/ipfs-writer/src/controller"
+	image "github.com/sramirezpch/ipfs-writer/src/service/image"
+	pinata "github.com/sramirezpch/ipfs-writer/src/service/pinata"
 )
 
 func NewRouter() *mux.Router {
 	config := config.NewConfig()
 
-	pinataIPFS := pinata.NewIPFSWriter(config)
+	p := pinata.NewPinata(config)
+	is := image.NewImageService(config)
 
-	ipfsWriterHandler := &controller.IPFSWriterHandler{Writer: pinataIPFS}
+	ipfsWriterHandler := &controller.PinataHandler{IpfsService: p, ImageService: is}
 
 	r := mux.NewRouter()
 	applyJSONToResponseHeader := func(next http.Handler) http.Handler {
