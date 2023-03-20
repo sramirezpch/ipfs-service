@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/sramirezpch/ipfs-writer/src/writer/model"
-	"github.com/sramirezpch/ipfs-writer/src/writer/service"
+	"github.com/sramirezpch/ipfs-writer/src/model"
+	"github.com/sramirezpch/ipfs-writer/src/service"
 	"go.uber.org/zap"
 )
 

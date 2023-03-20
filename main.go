@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	config "github.com/sramirezpch/ipfs-writer/config"
-	controller "github.com/sramirezpch/ipfs-writer/src/writer/controller"
-	pinata "github.com/sramirezpch/ipfs-writer/src/writer/service/pinata"
+	controller "github.com/sramirezpch/ipfs-writer/src/controller"
+	pinata "github.com/sramirezpch/ipfs-writer/src/service/pinata"
 	"go.uber.org/zap"
 )
 

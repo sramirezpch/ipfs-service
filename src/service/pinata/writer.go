@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	config "github.com/sramirezpch/ipfs-writer/config"
-	model "github.com/sramirezpch/ipfs-writer/src/writer/model"
+	model "github.com/sramirezpch/ipfs-writer/src/model"
 )
 
 type IPFSWriter struct {

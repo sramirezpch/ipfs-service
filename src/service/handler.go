@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/sramirezpch/ipfs-writer/src/writer/model"
+	"github.com/sramirezpch/ipfs-writer/src/model"
 )
 
 type Handler interface {
