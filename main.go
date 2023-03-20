@@ -10,14 +10,15 @@ import (
 	config "github.com/sramirezpch/ipfs-writer/config"
 	controller "github.com/sramirezpch/ipfs-writer/src/writer/controller"
 	pinata "github.com/sramirezpch/ipfs-writer/src/writer/service/pinata"
+	"go.uber.org/zap"
 )
 
-func NewRouter() *mux.Router {
+func NewRouter(logger *zap.Logger) *mux.Router {
 	config := config.NewConfig()
 
 	pinataIPFS := pinata.NewIPFSWriter(config)
 
-	ipfsWriterHandler := &controller.IPFSWriterHandler{Writer: pinataIPFS}
+	ipfsWriterHandler := &controller.IPFSWriterHandler{Writer: pinataIPFS, Logger: logger}
 
 	r := mux.NewRouter()
 	applyJSONToResponseHeader := func(next http.Handler) http.Handler {
@@ -34,10 +35,15 @@ func NewRouter() *mux.Router {
 }
 
 func main() {
-	router := NewRouter()
+	logger, err := zap.NewDevelopment()
+	if err != nil {
+		log.Fatalf("Couldn't initialize logger: %s\n", err)
+	}
+
+	router := NewRouter(logger)
 	c := cors.AllowAll()
 
-	err := http.ListenAndServe(":8080", c.Handler(router))
+	err = http.ListenAndServe(":8080", c.Handler(router))
 	if err != nil {
 		log.Fatalf("Couldn't start the server: %s\n", err.Error())
 		os.Exit(0)

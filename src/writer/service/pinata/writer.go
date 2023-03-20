@@ -59,14 +59,12 @@ func (w *IPFSWriter) UnpinJSON(cid string) (string, error) {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", w.Config.PinataJWT))
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return "", err
 	}
 
 	client := http.Client{}
 	resp, respErr := client.Do(req)
 	if respErr != nil {
-		fmt.Println(err.Error())
 		return "", respErr
 	}
 	defer resp.Body.Close()
@@ -86,7 +84,6 @@ func (w *IPFSWriter) ListPinnedFiles() ([]byte, error) {
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 
@@ -96,20 +93,14 @@ func (w *IPFSWriter) ListPinnedFiles() ([]byte, error) {
 
 	resp, reqErr := client.Do(req)
 	if reqErr != nil {
-		fmt.Println(reqErr.Error())
 		return nil, reqErr
 	}
 	defer resp.Body.Close()
 
 	body, readErr := ioutil.ReadAll(resp.Body)
 	if readErr != nil {
-		fmt.Println(readErr.Error())
 		return nil, readErr
 	}
 
 	return body, nil
-}
-
-func (w *IPFSWriter) Hello() {
-	fmt.Println("Hello!")
 }
